@@ -15,6 +15,11 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @GetMapping(path="lol")
+    public String test(){
+        return "success";
+    }
+
 
     @PostMapping(path="login")
     public UserDto doSignIn(@RequestBody UserDto userDto) {

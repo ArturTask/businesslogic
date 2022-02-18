@@ -1,10 +1,10 @@
 package ru.itmo.businesslogic.entities;
 
 import lombok.Data;
+import ru.itmo.businesslogic.enums.Role;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 
 @Entity
@@ -37,6 +37,10 @@ public class User implements Serializable {
     @Column(name = "token")
     private String token;
 
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
     public int getId() {
         return id;
     }
@@ -59,6 +63,10 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public String getEmail() {

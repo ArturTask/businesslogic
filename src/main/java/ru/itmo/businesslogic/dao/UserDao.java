@@ -40,13 +40,23 @@ public class UserDao {
         return new UserDto( null, null, "");
     }
 
-    public boolean findByLogin(String login) {
+    public User findByLogin(String login) {
+        List<User> users = (List<User>) entityManager.createQuery("From User as user where user.login ='" + login + "'").getResultList();
+        if( !users.isEmpty()){
+            return users.get(0);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public boolean isThereUserWithSuchLogin(String login) {
         List<User> users = (List<User>) entityManager.createQuery("From User as user where user.login ='" + login + "'").getResultList();
         return !users.isEmpty();
     }
 
     public UserDto save(User user) throws NoSuchAlgorithmException {
-        if(!findByLogin(user.getLogin())) {
+        if(!isThereUserWithSuchLogin(user.getLogin())) {
             user.setToken(EncryptionUtil.encrypt(user.getLogin() + user.getId()));
             entityManager.persist(user);
             return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(), "");
