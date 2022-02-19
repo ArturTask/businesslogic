@@ -29,8 +29,6 @@ public class UserController {
 
     @PostMapping("reg")
     public UserDto doSignUp(@RequestBody UserDto userDto){
-        System.out.println("ddddd");
-//        return new UserDto("dldkdkd");
         return userService.registr(userDto);
     }
 

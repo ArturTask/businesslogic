@@ -34,8 +34,9 @@ public class UserDao {
     public UserDto findUser(String login, String password) throws NoSuchAlgorithmException {
         List<User> users = (List<User>) entityManager.createQuery("From User as user where user.login ='" + login + "' and user.password='" + password + "'").getResultList();
         if(!users.isEmpty()){
-            System.out.println(users.get(0).getLogin());
-            return new UserDto( login, password, "");
+//            System.out.println(users.get(0).getLogin());
+            User currentUser = users.get(0);
+            return new UserDto( login, password, currentUser.getEmail(),currentUser.getRole().toString(), "");
         }
         return new UserDto( null, null, "");
     }
@@ -59,7 +60,7 @@ public class UserDao {
         if(!isThereUserWithSuchLogin(user.getLogin())) {
             user.setToken(EncryptionUtil.encrypt(user.getLogin() + user.getId()));
             entityManager.persist(user);
-            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(), "");
+            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(),user.getRole().toString(), "");
         }
         return new UserDto(null, null, null, "Cant create user with same login: user '" + user.getLogin() + "' already exists ");
     }
