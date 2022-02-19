@@ -35,14 +35,19 @@ public class JwtProvider {
             return true;
         } catch (ExpiredJwtException expEx) {
             System.out.println("Token expired");
+//            expEx.printStackTrace();
         } catch (UnsupportedJwtException unsEx) {
             System.out.println("Unsupported jwt");
+//            throw new UnsupportedJwtException("");
         } catch (MalformedJwtException mjEx) {
-            System.out.println("Malformed jwt");
+            System.out.println("Malformed jwt: corrupted token");
+//            throw new MalformedJwtException("wrong token");
         } catch (SignatureException sEx) {
             System.out.println("Invalid signature");
+//            throw new SignatureException("");
         } catch (Exception e) {
             System.out.println("invalid token");
+//            throw new Exception("");
 //            log.severe
         }
         return false;

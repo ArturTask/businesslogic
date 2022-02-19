@@ -1,6 +1,8 @@
 package ru.itmo.businesslogic.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.businesslogic.dao.UserDao;
 import ru.itmo.businesslogic.dto.QuestionDto;
@@ -24,12 +26,10 @@ public class UserController {
         return "success";
     }
 
-
     @PostMapping(path="login")
     public UserDto doSignIn(@RequestBody UserDto userDto) {
         return userService.signIn(userDto);
     }
-
 
     @PostMapping("reg")
     public UserDto doSignUp(@RequestBody UserDto userDto){
