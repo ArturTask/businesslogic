@@ -30,6 +30,15 @@ public class UserDto {
         this.msg = msg;
     }
 
+    public UserDto(String login, String password, String email, String role, String token, String msg) {
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.token = token;
+        this.msg = msg;
+    }
+
     public UserDto(String login, String password, String msg) {
         this.login = login;
         this.password = password;
@@ -49,6 +58,16 @@ public class UserDto {
     private String email;
 
     private String role;
+
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     private String msg;
 
@@ -72,6 +91,10 @@ public class UserDto {
         this.msg = msg;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void addMsg(String msg){
         this.msg+=msg;
     }
@@ -79,4 +102,5 @@ public class UserDto {
     public String getRole() {
         return this.role;
     }
+
 }

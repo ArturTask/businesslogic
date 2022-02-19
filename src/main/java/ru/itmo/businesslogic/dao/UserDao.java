@@ -31,14 +31,15 @@ public class UserDao {
         return null;
     }
 
-    public UserDto findUser(String login, String password) throws NoSuchAlgorithmException {
-        List<User> users = (List<User>) entityManager.createQuery("From User as user where user.login ='" + login + "' and user.password='" + password + "'").getResultList();
-        if(!users.isEmpty()){
+    public User findUser(String login, String password) throws NoSuchAlgorithmException {
+        User currentUser = findByLogin(login);
+        if(currentUser!=null){
 //            System.out.println(users.get(0).getLogin());
-            User currentUser = users.get(0);
-            return new UserDto( login, password, currentUser.getEmail(),currentUser.getRole().toString(), "");
+            return currentUser;
+//            return new UserDto( login, password, currentUser.getEmail(),currentUser.getToken(),currentUser.getRole().toString(), "");
         }
-        return new UserDto( null, null, "");
+        return null;
+//        return new UserDto( null, null, "");
     }
 
     public User findByLogin(String login) {
@@ -58,9 +59,10 @@ public class UserDao {
 
     public UserDto save(User user) throws NoSuchAlgorithmException {
         if(!isThereUserWithSuchLogin(user.getLogin())) {
-            user.setToken(EncryptionUtil.encrypt(user.getLogin() + user.getId()));
+//            System.out.println("dao ="+user.getToken());
+//            user.setToken(user.getToken()); //token
             entityManager.persist(user);
-            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(),user.getRole().toString(), "");
+            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(),user.getToken(),user.getRole().toString(), "");
         }
         return new UserDto(null, null, null, "Cant create user with same login: user '" + user.getLogin() + "' already exists ");
     }

@@ -20,10 +20,11 @@ public class User implements Serializable {
         this.email=email;
     }
 
-    public User(String login, String password, String email, Role role) {
+    public User(String login, String password, String email,String token, Role role) {
         this.login = login;
         this.password = password;
         this.email = email;
+        this.token = token;
         this.role = role;
     }
 
