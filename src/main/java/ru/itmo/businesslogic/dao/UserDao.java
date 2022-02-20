@@ -62,8 +62,12 @@ public class UserDao {
 //            System.out.println("dao ="+user.getToken());
 //            user.setToken(user.getToken()); //token
             entityManager.persist(user);
-            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(),user.getToken(),user.getRole().toString(), "");
+            return new UserDto(user.getLogin(), user.getPassword(), user.getEmail(),user.getRole().toString(),user.getToken(), "");
         }
         return new UserDto(null, null, null, "Cant create user with same login: user '" + user.getLogin() + "' already exists ");
+    }
+
+    public void update(User user){
+        entityManager.merge(user);
     }
 }

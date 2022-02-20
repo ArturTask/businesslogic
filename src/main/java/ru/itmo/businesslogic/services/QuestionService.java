@@ -46,6 +46,17 @@ public class QuestionService {
         return questionDao.getAllQuestions();
     }
 
+    public QuestionDto changeQuestionStatus(Integer questionId, boolean isValid) {
+        if(questionId==null)
+        {
+            return new QuestionDto("Bad request no id found");
+        }
+        if(!isValid) {
+            return questionDao.deleteQuestion(questionId);
+        }
+        return questionDao.changeQuestionStatusToEvaluated(questionId);
+    }
+
 
 
 }

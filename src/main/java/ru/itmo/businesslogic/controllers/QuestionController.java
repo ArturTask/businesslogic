@@ -39,6 +39,11 @@ public class QuestionController {
 
     }
 
+    @PostMapping("change_status")
+    public QuestionDto changeQuestionStatus(@RequestBody QuestionDto questionDto) {
+        return questionService.changeQuestionStatus(questionDto.getId(), questionDto.isValid());
+    }
+
 
     @GetMapping("all")
     public QuestionDto getAll() {

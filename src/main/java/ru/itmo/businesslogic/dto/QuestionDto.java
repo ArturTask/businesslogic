@@ -65,6 +65,8 @@ public class QuestionDto {
 
     private String tag;
 
+    private boolean valid;
+
     private List<Question> questionsOfParticularUser;
 
     private String msg;
@@ -119,5 +121,9 @@ public class QuestionDto {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

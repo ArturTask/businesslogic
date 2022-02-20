@@ -33,8 +33,8 @@ public class UserController {
 
     @PostMapping("reg")
     public UserDto doSignUp(@RequestBody UserDto userDto){
-        final String token = jwtProvider.generateToken(userDto.getLogin());
-        userDto.setToken(token);
+//        final String token = jwtProvider.generateToken(userDto.getLogin());
+//        userDto.setToken(token);
         return userService.registr(userDto);
     }
 

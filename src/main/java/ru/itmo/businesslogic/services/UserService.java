@@ -7,6 +7,7 @@ import ru.itmo.businesslogic.dao.UserDao;
 import ru.itmo.businesslogic.dto.UserDto;
 import ru.itmo.businesslogic.entities.User;
 import ru.itmo.businesslogic.enums.Role;
+import ru.itmo.businesslogic.security.JwtProvider;
 import ru.itmo.businesslogic.util.EncryptionUtil;
 
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +17,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Autowired
     private UserDao userDao;
@@ -50,11 +54,12 @@ public class UserService {
             }
             else {
                 if(passwordEncoder.matches(userDto.getPassword(),currentUser.getPassword())){
-                    return new UserDto( userDto.getLogin(), "",currentUser.getRole().toString(), currentUser.getEmail(),currentUser.getToken(), "Login Success");
+                    String token = jwtProvider.generateToken(userDto.getLogin());
+                    currentUser.setToken(token);
+                    userDao.update(currentUser);
+                    return new UserDto( userDto.getLogin(), "",currentUser.getRole().toString(), currentUser.getEmail(),token, "Login Success");
                 }
-//                currentUser.setMsg("Login Success");
                 return new UserDto( userDto.getLogin(), "", "","","", "Wrong password");
-//                return currentUser;
             }
         }
         catch (NoSuchAlgorithmException e){

@@ -41,6 +41,9 @@ public class QuestionDao {
 
     public QuestionDto deleteQuestion (int id, String token) {
         Question question = findQuestionById(id);
+        if(question==null){
+            return new QuestionDto("No question with id = "+id);
+        }
         System.out.println(question.toString());
         if(userDao.isThereUserWithSuchId(question.getCreatorId())) {
             User owner = userDao.findUserById(question.getCreatorId());
@@ -51,6 +54,26 @@ public class QuestionDao {
 //            return new QuestionDto("It's not your question");
         }
         return new QuestionDto("Invalid user id");
+    }
+
+    public QuestionDto deleteQuestion (int id) {
+        Question question = findQuestionById(id);
+        if(question==null){
+            return new QuestionDto("No question with id = "+id);
+        }
+        entityManager.remove(question);
+        return new QuestionDto("Question with id " + id + " was removed");
+    }
+
+
+    public QuestionDto changeQuestionStatusToEvaluated(int id) {
+        Question question = findQuestionById(id);
+        if(question==null){
+            return new QuestionDto("No question with id = "+id);
+        }
+        question.setEvaluated(true);
+        entityManager.merge(question);
+        return new QuestionDto("Question with id " + id + " was evaluated");
     }
 
     public QuestionDto getQuestionsByUserId(int userId) {

@@ -64,4 +64,8 @@ public class Question implements Serializable {
     public Tag getTag() {
         return tag;
     }
+
+    public void setEvaluated(boolean evaluated) {
+        this.evaluated = evaluated;
+    }
 }
