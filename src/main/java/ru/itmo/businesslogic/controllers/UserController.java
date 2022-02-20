@@ -28,7 +28,12 @@ public class UserController {
 
     @PostMapping(path="login")
     public UserDto doSignIn(@RequestBody UserDto userDto) {
-        return userService.signIn(userDto);
+        try {
+            return userService.signIn(userDto);
+        }
+        catch (Exception e){
+            return new UserDto(userDto.getLogin(), "", "", "", "", "Transaction rollback Login failed");
+        }
     }
 
     @PostMapping("reg")

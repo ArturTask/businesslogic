@@ -3,6 +3,9 @@ package ru.itmo.businesslogic.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.businesslogic.dao.UserDao;
 import ru.itmo.businesslogic.dto.UserDto;
 import ru.itmo.businesslogic.entities.User;
@@ -46,21 +49,30 @@ public class UserService {
 
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {NoSuchAlgorithmException.class,NullPointerException.class})
     public UserDto signIn(UserDto userDto){
         try {
             User currentUser = userDao.findUser(userDto.getLogin(), userDto.getPassword());
-            if(currentUser==null){
-                return new UserDto("Login failed");
-            }
-            else {
-                if(passwordEncoder.matches(userDto.getPassword(),currentUser.getPassword())){
+//            if(currentUser==null){
+//                return new UserDto("Login failed");
+//            }
+//            else {
+            try {
+//                userDao.save(new User("1","1","1")); //testTransaction
+                if (passwordEncoder.matches(userDto.getPassword(), currentUser.getPassword())) {
                     String token = jwtProvider.generateToken(userDto.getLogin());
                     currentUser.setToken(token);
                     userDao.update(currentUser);
-                    return new UserDto( userDto.getLogin(), "",currentUser.getRole().toString(), currentUser.getEmail(),token, "Login Success");
+                    return new UserDto(userDto.getLogin(), "", currentUser.getRole().toString(), currentUser.getEmail(), token, "Login Success");
+                } else {
+                    return new UserDto(userDto.getLogin(), "", "", "", "", "Wrong password");
                 }
-                return new UserDto( userDto.getLogin(), "", "","","", "Wrong password");
             }
+            catch (NullPointerException e){
+//                throw e;
+                return new UserDto(userDto.getLogin(), "", "", "", "", "Login failed");
+            }
+//            }
         }
         catch (NoSuchAlgorithmException e){
             return null;
