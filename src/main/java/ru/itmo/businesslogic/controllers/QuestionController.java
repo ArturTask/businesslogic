@@ -36,7 +36,6 @@ public class QuestionController {
         catch (Exception e) {
             return new QuestionDto("Bad request: no id");
         }
-
     }
 
     @PostMapping("change_status")

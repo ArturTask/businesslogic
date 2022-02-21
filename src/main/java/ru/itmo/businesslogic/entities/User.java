@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 
 @Entity
+//@Table(name="users",schema = "s274007")
 @Table(name="users",schema = "public")
 @Data
 public class User implements Serializable {

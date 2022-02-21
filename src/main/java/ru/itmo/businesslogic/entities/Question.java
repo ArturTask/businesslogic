@@ -7,7 +7,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "questions")
+//@Table(name = "questions",schema = "s274007")
+@Table(name = "questions",schema = "public")
 @Data
 public class Question implements Serializable {
     public Question() {

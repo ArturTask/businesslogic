@@ -28,14 +28,14 @@ public class QuestionDao {
     }
 
     public QuestionDto save(Question question, String token) {
-//        String userToken = userDao.findUserById(question.getCreatorId()).getToken();
-//        if(token.equals(userToken)) {
+        String userToken = userDao.findUserById(question.getCreatorId()).getToken();
+        if(token.equals(userToken)) {
             entityManager.persist(question);
             entityManager.flush(); //to get generated id
             // send id , creators id, evaluated=false and tags to client
             return new QuestionDto(question.getId(), question.getCreatorId(), "", "", false, question.getTag().toString(), null);
-//        }
-//        return new QuestionDto("Invalid user id");
+        }
+        return new QuestionDto("Invalid user id");
     }
 
 
@@ -47,11 +47,12 @@ public class QuestionDao {
         System.out.println(question.toString());
         if(userDao.isThereUserWithSuchId(question.getCreatorId())) {
             User owner = userDao.findUserById(question.getCreatorId());
-//            if (owner.getToken().equals(token)) {
+
+            if (owner.getToken().equals(token)) {
                 entityManager.remove(question);
                 return new QuestionDto(question.getId(), question.getCreatorId(), question.getHead(), question.getBody(), true, question.getTag().toString(), null);
-//            }
-//            return new QuestionDto("It's not your question");
+            }
+            return new QuestionDto("It's not your question");
         }
         return new QuestionDto("Invalid user id");
     }

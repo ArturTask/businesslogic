@@ -32,7 +32,7 @@ public class UserService {
             if (userDto.getLogin() == null || userDto.getPassword() == null || userDto.getEmail() == null) {
                 return new UserDto("Bad request some parameters are missing");
             }
-            UserDto currentUser = userDao.save(new User(userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getToken(), Role.ROLE_USER));
+            UserDto currentUser = userDao.save(new User(userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getToken(), Role.USER));
             if (currentUser.getLogin() != null) {
                 currentUser.setPassword("");
                 currentUser.setMsg("Registration success");
