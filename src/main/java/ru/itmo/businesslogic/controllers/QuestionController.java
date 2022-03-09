@@ -1,19 +1,16 @@
 package ru.itmo.businesslogic.controllers;
 
-import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import ru.itmo.businesslogic.dao.QuestionDao;
 import ru.itmo.businesslogic.dto.QuestionDto;
 import ru.itmo.businesslogic.services.QuestionService;
-
-import javax.validation.Valid;
+import ru.itmo.businesslogic.services.RabbitMqSender;
 
 @RestController
 @RequestMapping("questions/")
 public class QuestionController {
+
 
     @Autowired
     private QuestionService questionService;
@@ -40,13 +37,18 @@ public class QuestionController {
 
     @PostMapping("change_status")
     public QuestionDto changeQuestionStatus(@RequestBody QuestionDto questionDto) {
-        return questionService.changeQuestionStatus(questionDto.getId(), questionDto.isValid());
+        return questionService.changeQuestionStatus(questionDto.getId(), questionDto.isValid(),questionDto.getToken());
     }
 
 
     @GetMapping("all")
     public QuestionDto getAll() {
         return questionService.getAll();
+    }
+
+    @GetMapping("get_questions_for_evaluation")
+    public QuestionDto getQuestions(@RequestBody QuestionDto questionDto) {
+        return questionService.getQuestionsForEvaluation(questionDto.getToken());
     }
 
 

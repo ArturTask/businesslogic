@@ -42,6 +42,9 @@ public class Question implements Serializable {
     @Enumerated(EnumType.STRING)
     private Tag tag;
 
+    @Column(name = "moderator_id")
+    private Integer moderatorId;
+
     public int getId() {
         return id;
     }

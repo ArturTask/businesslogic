@@ -1,8 +1,11 @@
 package ru.itmo.businesslogic.dao;
 
+import com.oracle.tools.packager.Log;
+import jdk.nashorn.internal.runtime.logging.DebugLogger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import ru.itmo.businesslogic.dto.QuestionDto;
 import ru.itmo.businesslogic.entities.Question;
@@ -12,10 +15,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Transactional
 @Repository
 public class QuestionDao {
+
+    private static final Logger LOGGER = Logger.getLogger(QuestionDao.class.getName());
 
     @Autowired
     UserDao userDao;
@@ -92,6 +98,50 @@ public class QuestionDao {
         List<Question> questions = (List<Question>) entityManager.createQuery("From Question as q").getResultList();
         return new QuestionDto(null,null,"","",true,"",questions);
     }
+
+    public QuestionDto getQuestionsForEvaluation(String token) {
+        User user = ((List<User>) entityManager.createQuery("From User as user Where user.token = '" + token + "'").getResultList()).get(0);
+        List<Question> questions = (List<Question>) entityManager.createQuery("From Question as question where question.moderatorId =" + user.getId())
+                .getResultList();
+        return new QuestionDto(null,null,"","",true,"",questions);
+    }
+
+    public void update(Question question) {
+        entityManager.merge(question);
+    }
+
+
+    @Scheduled(fixedDelay = 3600000)
+    public void addModeratorsToQuestions() {
+        LOGGER.info("add moderators to questions");
+        List<User> moderators = (List<User>) entityManager.createQuery("From User as user Where user.role = 'ADMIN'").getResultList();
+        List<Question> questions = (List<Question>) entityManager.createQuery("From Question as question Where question.moderatorId IS NULL").getResultList();
+
+        int questionsCountForModerator = questions.size() / moderators.size();
+        int remainder = questions.size() - questionsCountForModerator * moderators.size();
+        int currentModeratorIndex = 0;
+        int currentCount = 0;
+
+
+
+        for(Question question: questions) {
+            question.setModeratorId(moderators.get(currentModeratorIndex).getId());
+            update(question);
+            currentCount++;
+            if(currentModeratorIndex < remainder) {
+                if(currentCount == questionsCountForModerator + 1) {
+                    currentCount = 0;
+                    currentModeratorIndex++;
+                }
+            }
+            else if(currentCount == questionsCountForModerator) {
+                currentCount = 0;
+                currentModeratorIndex++;
+            }
+        }
+
+    }
+
 
 
 
