@@ -33,3 +33,6 @@ build/
 .vscode/
 .mvn/
 *.DS_Store
+
+### logs ###
+transaction-logs
