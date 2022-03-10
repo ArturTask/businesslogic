@@ -20,17 +20,6 @@ import java.security.NoSuchAlgorithmException;
 public class UserService {
 
     @Autowired
-    private RabbitMqSender rabbitMqSender;
-//    @Autowired
-//    public void ProducerController(RabbitMqSender rabbitMqSender) {
-//        this.rabbitMqSender = rabbitMqSender;
-//    }
-
-    @Value("${app.message}")
-    private String message;
-
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -47,10 +36,8 @@ public class UserService {
             UserDto currentUser = userDao.save(new User(userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getEmail(), userDto.getToken(), Role.USER));
             if (currentUser.getLogin() != null) {
                 currentUser.setPassword("");
-                rabbitMqSender.send("Test send from registr");
+                currentUser.setMsg("Registration success");
 
-//                currentUser.setMsg("Registration success");
-                currentUser.setMsg(message);
                 return currentUser;
             } else {
                 currentUser.addMsg(" Registration failed");

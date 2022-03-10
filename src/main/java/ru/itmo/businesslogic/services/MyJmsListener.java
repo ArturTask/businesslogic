@@ -10,13 +10,22 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class RabbitMqService implements RabbitListenerConfigurer {
-    private static final Logger logger = LoggerFactory.getLogger(RabbitMqService.class);
+public class MyJmsListener implements RabbitListenerConfigurer {
+
+    private static final Logger logger = LoggerFactory.getLogger(MyJmsListener.class);
+
+    private static String message;
+
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar rabbitListenerEndpointRegistrar) {
     }
     @RabbitListener(queues = "user.queue")
     public void receivedMessage(String msg) {
+        message = msg;
         logger.info("Msg Received is.. " + msg);
+    }
+
+    public static String getMessage() {
+        return message;
     }
 }

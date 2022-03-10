@@ -10,10 +10,15 @@ import org.springframework.stereotype.Repository;
 import ru.itmo.businesslogic.dto.QuestionDto;
 import ru.itmo.businesslogic.entities.Question;
 import ru.itmo.businesslogic.entities.User;
+import ru.itmo.businesslogic.jms.MyJmsLictener;
+import ru.itmo.businesslogic.services.MyJmsListener;
+import ru.itmo.businesslogic.services.RabbitMqSender;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,7 +26,8 @@ import java.util.logging.Logger;
 @Repository
 public class QuestionDao {
 
-    private static final Logger LOGGER = Logger.getLogger(QuestionDao.class.getName());
+    @Autowired
+    private RabbitMqSender rabbitMqSender;
 
     @Autowired
     UserDao userDao;
@@ -103,7 +109,7 @@ public class QuestionDao {
         User user = ((List<User>) entityManager.createQuery("From User as user Where user.token = '" + token + "'").getResultList()).get(0);
         List<Question> questions = (List<Question>) entityManager.createQuery("From Question as question where question.moderatorId =" + user.getId())
                 .getResultList();
-        return new QuestionDto(null,null,"","",true,"",questions);
+        return new QuestionDto(null,null,"","",true,"",questions, MyJmsListener.getMessage());
     }
 
     public void update(Question question) {
@@ -113,7 +119,7 @@ public class QuestionDao {
 
     @Scheduled(fixedDelay = 3600000)
     public void addModeratorsToQuestions() {
-        LOGGER.info("add moderators to questions");
+//        LOGGER.info("add moderators to questions");
         List<User> moderators = (List<User>) entityManager.createQuery("From User as user Where user.role = 'ADMIN'").getResultList();
         List<Question> questions = (List<Question>) entityManager.createQuery("From Question as question Where question.moderatorId IS NULL").getResultList();
 
@@ -121,8 +127,10 @@ public class QuestionDao {
         int remainder = questions.size() - questionsCountForModerator * moderators.size();
         int currentModeratorIndex = 0;
         int currentCount = 0;
+        Date dateNow = new Date();
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat("E MM.dd HH:mm:ss ");
 
-
+        rabbitMqSender.send(formatForDateNow.format(dateNow)+" :Add moderators to questions");
 
         for(Question question: questions) {
             question.setModeratorId(moderators.get(currentModeratorIndex).getId());
@@ -143,8 +151,7 @@ public class QuestionDao {
     }
 
 
-
-
+    private static String lol = MyJmsLictener.getMessage();
 
 
 }
