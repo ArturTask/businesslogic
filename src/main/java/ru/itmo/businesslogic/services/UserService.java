@@ -51,7 +51,7 @@ public class UserService {
 
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {NoSuchAlgorithmException.class,NullPointerException.class})
+//    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {NoSuchAlgorithmException.class,NullPointerException.class})
     public UserDto signIn(UserDto userDto){
         try {
             User currentUser = userDao.findUser(userDto.getLogin(), userDto.getPassword());
@@ -65,7 +65,7 @@ public class UserService {
                     String token = jwtProvider.generateToken(userDto.getLogin());
                     currentUser.setToken(token);
                     userDao.update(currentUser);
-                    return new UserDto(userDto.getLogin(), "", currentUser.getRole().toString(), currentUser.getEmail(), token, "Login Success");
+                    return new UserDto(currentUser.getId(),userDto.getLogin(), "", currentUser.getRole().toString(), currentUser.getEmail(), token, "Login Success");
                 } else {
                     return new UserDto(userDto.getLogin(), "", "", "", "", "Wrong password");
                 }

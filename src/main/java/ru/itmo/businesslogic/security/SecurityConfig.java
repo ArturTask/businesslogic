@@ -55,18 +55,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
-                .antMatchers("/questions/change_status").hasAuthority("ADMIN")
-                .antMatchers("/questions/get_questions_for_evaluation").hasAuthority("ADMIN")
-                .antMatchers("/user/login").permitAll()
-                .antMatchers("/user/reg").permitAll()
-                .antMatchers("/questions/all").permitAll()
-                .antMatchers("/questions/user/*").permitAll()
+                                .antMatchers("/*").permitAll()
+//                .antMatchers("/questions/change_status").hasAuthority("ADMIN")
+//                .antMatchers("/questions/get_questions_for_evaluation").hasAuthority("ADMIN")
+//                .antMatchers("/user/login").permitAll()
+//                .antMatchers("/user/reg").permitAll()
 //                .antMatchers("/questions/all").permitAll()
-                .anyRequest().authenticated()
+//                .antMatchers("/questions/user/*").permitAll()
+//                .antMatchers("/questions/all").permitAll()
+//                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().accessDeniedPage("/403")
-                .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                .and()
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
 
         ;

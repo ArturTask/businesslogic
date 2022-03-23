@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0w73wcp" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.12.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:collaboration id="Collaboration_1s2ty3d">
+    <bpmn:participant id="Participant_0rwqajy" name="Demo processing" processRef="Process_LOL_KEK" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_LOL_KEK" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0hsxi85">
+      <bpmn:lane id="server" name="server">
+        <bpmn:flowNodeRef>Activity_1it27q2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1oqerd4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0h69nfh</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="client" name="client">
+        <bpmn:flowNodeRef>Gateway_0bmdi5z</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0ly98xp</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>question_form</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1vd64xa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_04njvt6</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_0x9879s" sourceRef="question_form" targetRef="Activity_0h69nfh" />
+    <bpmn:sequenceFlow id="Flow_0d3otgw" name="yes" sourceRef="Gateway_1oqerd4" targetRef="question_form">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${is_authorised}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1568h0u" name="no" sourceRef="Gateway_1oqerd4" targetRef="Activity_0ly98xp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!is_authorised}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0uw2h93" sourceRef="StartEvent_1" targetRef="Activity_0ly98xp" />
+    <bpmn:sequenceFlow id="Flow_0uuzjf0" sourceRef="Activity_0ly98xp" targetRef="Gateway_0bmdi5z" />
+    <bpmn:sequenceFlow id="Flow_07tbipb" name="invalid" sourceRef="Gateway_0bmdi5z" targetRef="Activity_0ly98xp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${login=="" || password==""}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rkuiuu" name="valid" sourceRef="Gateway_0bmdi5z" targetRef="Activity_1it27q2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${login!="" &amp;&amp; password!=""}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="question_form" name="question form">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="question_title" label="title" type="string" />
+          <camunda:formField id="question_body" label="question" type="string" />
+          <camunda:formField id="creator_id" label="creator id" type="string" defaultValue="${user_id}" />
+          <camunda:formField id="curr_token" type="string" defaultValue="${token}" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0d3otgw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0x9879s</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_0ly98xp" name="login" camunda:formRef="" camunda:formRefBinding="latest" camunda:candidateUsers="1">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="login" label="login" type="string" />
+          <camunda:formField id="password" label="password" type="string" />
+          <camunda:formField id="is_authorised" label="прошел авторизацию" type="boolean" />
+          <camunda:formField id="user_id" label="user id" type="string" />
+          <camunda:formField id="token" label="token" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0uw2h93</bpmn:incoming>
+      <bpmn:incoming>Flow_1568h0u</bpmn:incoming>
+      <bpmn:incoming>Flow_07tbipb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0uuzjf0</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0uw2h93</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_0bmdi5z">
+      <bpmn:incoming>Flow_0uuzjf0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rkuiuu</bpmn:outgoing>
+      <bpmn:outgoing>Flow_07tbipb</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_1it27q2" name="check user" camunda:delegateExpression="${authDelegate}">
+      <bpmn:incoming>Flow_1rkuiuu</bpmn:incoming>
+      <bpmn:outgoing>Flow_0c7n7qe</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1oqerd4" name="is Authorised">
+      <bpmn:incoming>Flow_0c7n7qe</bpmn:incoming>
+      <bpmn:outgoing>Flow_1568h0u</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0d3otgw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0c7n7qe" sourceRef="Activity_1it27q2" targetRef="Gateway_1oqerd4" />
+    <bpmn:serviceTask id="Activity_0h69nfh" name="try to upload question" camunda:delegateExpression="${questionDelegate}">
+      <bpmn:incoming>Flow_0x9879s</bpmn:incoming>
+      <bpmn:outgoing>Flow_0k7qsso</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0k7qsso" sourceRef="Activity_0h69nfh" targetRef="Activity_04njvt6" />
+    <bpmn:sequenceFlow id="Flow_08cswg7" sourceRef="Activity_04njvt6" targetRef="Event_1vd64xa" />
+    <bpmn:endEvent id="Event_1vd64xa">
+      <bpmn:incoming>Flow_08cswg7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_04njvt6" name="notify user">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="message" label="message from server" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0k7qsso</bpmn:incoming>
+      <bpmn:outgoing>Flow_08cswg7</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1s2ty3d">
+      <bpmndi:BPMNShape id="Participant_0rwqajy_di" bpmnElement="Participant_0rwqajy" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1070" height="440" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1thw7yt_di" bpmnElement="client" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1040" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1rot81q_di" bpmnElement="server" isHorizontal="true">
+        <dc:Bounds x="190" y="270" width="1040" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1rkuiuu_di" bpmnElement="Flow_1rkuiuu">
+        <di:waypoint x="595" y="147" />
+        <di:waypoint x="640" y="147" />
+        <di:waypoint x="640" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="607" y="133" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07tbipb_di" bpmnElement="Flow_07tbipb">
+        <di:waypoint x="570" y="172" />
+        <di:waypoint x="570" y="180" />
+        <di:waypoint x="459" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="514" y="189" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uuzjf0_di" bpmnElement="Flow_0uuzjf0">
+        <di:waypoint x="460" y="147" />
+        <di:waypoint x="545" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uw2h93_di" bpmnElement="Flow_0uw2h93">
+        <di:waypoint x="278" y="147" />
+        <di:waypoint x="360" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1568h0u_di" bpmnElement="Flow_1568h0u">
+        <di:waypoint x="615" y="460" />
+        <di:waypoint x="410" y="460" />
+        <di:waypoint x="410" y="187" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="506" y="442" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d3otgw_di" bpmnElement="Flow_0d3otgw">
+        <di:waypoint x="665" y="460" />
+        <di:waypoint x="770" y="460" />
+        <di:waypoint x="770" y="187" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="709" y="442" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0x9879s_di" bpmnElement="Flow_0x9879s">
+        <di:waypoint x="820" y="147" />
+        <di:waypoint x="855" y="147" />
+        <di:waypoint x="855" y="340" />
+        <di:waypoint x="890" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c7n7qe_di" bpmnElement="Flow_0c7n7qe">
+        <di:waypoint x="640" y="380" />
+        <di:waypoint x="640" y="435" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k7qsso_di" bpmnElement="Flow_0k7qsso">
+        <di:waypoint x="940" y="300" />
+        <di:waypoint x="940" y="187" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08cswg7_di" bpmnElement="Flow_08cswg7">
+        <di:waypoint x="990" y="147" />
+        <di:waypoint x="1062" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_0bmdi5z_di" bpmnElement="Gateway_0bmdi5z" isMarkerVisible="true">
+        <dc:Bounds x="545" y="122" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="129" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0l7yvjt_di" bpmnElement="Activity_0ly98xp">
+        <dc:Bounds x="360" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0s9gf17_di" bpmnElement="question_form">
+        <dc:Bounds x="720" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06c94fk_di" bpmnElement="Activity_1it27q2">
+        <dc:Bounds x="590" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1oqerd4_di" bpmnElement="Gateway_1oqerd4" isMarkerVisible="true">
+        <dc:Bounds x="615" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="610" y="492" width="64" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0e8t64o_di" bpmnElement="Activity_0h69nfh">
+        <dc:Bounds x="890" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vd64xa_di" bpmnElement="Event_1vd64xa">
+        <dc:Bounds x="1062" y="129" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1prpip7_di" bpmnElement="Activity_04njvt6">
+        <dc:Bounds x="890" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

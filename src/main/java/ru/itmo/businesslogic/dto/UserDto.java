@@ -7,6 +7,16 @@ public class UserDto {
     public UserDto() {
     }
 
+    public UserDto(Integer id, String login, String password, String email, String role, String token, String msg) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.token = token;
+        this.msg = msg;
+    }
+
     public UserDto(Integer id, String login, String password, String email, String msg) {
         this.id = id;
         this.login = login;
@@ -103,4 +113,7 @@ public class UserDto {
         return this.role;
     }
 
+    public Integer getId() {
+        return id;
+    }
 }

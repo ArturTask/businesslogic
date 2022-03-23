@@ -24,6 +24,14 @@ public class QuestionDto {
         this.questionsOfParticularUser=questionsOfParticularUser;
     }
 
+    public QuestionDto(String token, Integer creatorId, String head, String body, String tag) {
+        this.token = token;
+        this.creatorId = creatorId;
+        this.head = head;
+        this.body = body;
+        this.tag = tag;
+    }
+
     public QuestionDto(Integer id, Integer creatorId, String head, String body, boolean evaluated, String tag, List<Question> questionsOfParticularUser, String msg) {
         this.id = id;
         this.creatorId = creatorId;

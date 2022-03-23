@@ -45,7 +45,7 @@ public class QuestionDao {
             entityManager.persist(question);
             entityManager.flush(); //to get generated id
             // send id , creators id, evaluated=false and tags to client
-            return new QuestionDto(question.getId(), question.getCreatorId(), "", "", false, question.getTag().toString(), null);
+            return new QuestionDto(question.getId(), question.getCreatorId(), "", "", false, question.getTag().toString(), null,"question successfully added");
         }
         return new QuestionDto("Invalid user id");
     }

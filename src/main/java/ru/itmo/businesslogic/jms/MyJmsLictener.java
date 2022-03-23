@@ -13,7 +13,7 @@ public class MyJmsLictener {
     private static String message;
 
     @JmsListener(destination = "user.queue")
-    public void handleMessage(String msg) {//implicit message type conversion
+    public void handleMessage(String msg) {
         message = msg;
         logger.info("Msg Received is.. "+msg);
     }
